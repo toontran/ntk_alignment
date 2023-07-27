@@ -1,3 +1,4 @@
+# alignment.py
 from nngeometry.object.fspace import FMatDense
 from nngeometry.object.vector import FVector
 from nngeometry.object import PMatImplicit
@@ -11,7 +12,7 @@ def alignment(model, output_fn, loader, n_output, centering=True):
     lc = LayerCollection.from_model(model)
     generator = Jacobian(layer_collection=lc,
                          model=model,
-                         loader=loader,
+                        #  loader=loader,
                          function=output_fn,
                          n_output=n_output,
                          centering=centering)
@@ -20,7 +21,7 @@ def alignment(model, output_fn, loader, n_output, centering=True):
     targets -= targets.mean(dim=0)
     targets = FVector(vector_repr=targets.t().contiguous())
 
-    K_dense = FMatDense(generator)
+    K_dense = FMatDense(generator, examples=loader)
     yTKy = K_dense.vTMv(targets)
     frobK = K_dense.frobenius_norm()
 
@@ -44,12 +45,12 @@ def layer_alignment(model, output_fn, loader, n_output, centering=True):
 
         generator = Jacobian(layer_collection=lc_this,
                              model=model,
-                             loader=loader,
+                            #  loader=loader,
                              function=output_fn,
                              n_output=n_output,
                              centering=centering)
 
-        K_dense = FMatDense(generator)
+        K_dense = FMatDense(generator, examples=loader)
         yTKy = K_dense.vTMv(targets)
         frobK = K_dense.frobenius_norm()
 
@@ -63,3 +64,4 @@ def compute_trK(align_dl, model, output_fn, n_output):
     generator = Jacobian(model, align_dl, output_fn, n_output=n_output)
     F = PMatImplicit(generator)
     return F.trace().item() * len(align_dl)
+

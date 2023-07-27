@@ -1,3 +1,5 @@
+# train.py -> change where to store results
+
 import argparse
 from tasks import get_task
 import time
@@ -84,6 +86,7 @@ def train(args, log, rae):
     correct = 0
     total = 0
     iterations = 0
+    print(model)
 
     if args.complexity:
         w_before = PVector.from_model(model).clone().detach()
@@ -94,6 +97,9 @@ def train(args, log, rae):
             inputs, targets = inputs.to('cuda'), targets.to('cuda')
             optimizer.zero_grad()
             outputs = model(inputs)
+            #print(inputs.shape, outputs.shape, targets.shape)
+            # print(model)
+            #continue
             loss = criterion(outputs, targets)
             loss.backward()
             optimizer.step()
@@ -147,9 +153,10 @@ def train(args, log, rae):
 
 
                 log.loc[len(log)] = to_log
-                print(log.loc[len(log) - 1])
+                with pd.option_context('display.max_rows', None, 'display.max_columns', None, 'display.max_colwidth', None):
+                    print(log.loc[len(log) - 1])
 
-                log.to_pickle(os.path.join(results_dir,'log.pkl'))
+                #log.to_pickle(os.path.join(results_dir,'log.pkl'))
 
             iterations += 1
 
@@ -204,3 +211,5 @@ if args.complexity:
 
 log = pd.DataFrame(columns=columns)
 train(args, log, rae)
+
+
