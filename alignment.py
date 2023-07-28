@@ -9,7 +9,7 @@ import torch
 from torch.nn.functional import one_hot
 
 def alignment(model, output_fn, loader, n_output, centering=True):
-    lc = LayerCollection.from_model(model)
+    lc = LayerCollection.from_model(model, ignore_unsupported_layers=True)
     generator = Jacobian(layer_collection=lc,
                          model=model,
                         #  loader=loader,
@@ -30,7 +30,7 @@ def alignment(model, output_fn, loader, n_output, centering=True):
     return align.item(), K_dense.get_dense_tensor()
 
 def layer_alignment(model, output_fn, loader, n_output, centering=True):
-    lc = LayerCollection.from_model(model)
+    lc = LayerCollection.from_model(model, ignore_unsupported_layers=True)
     alignments = []
 
     targets = torch.cat([args[1] for args in iter(loader)])
